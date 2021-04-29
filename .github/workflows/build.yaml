@@ -117,16 +117,6 @@ jobs:
         docker-version:
           - "5:20.10.6~3-0~ubuntu-focal"
     steps:
-      - name: Prepare Check Runs
-        uses: dflydev/check-runs-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          checks: |
-            [
-              { "id": "phpunit", "name": "PHPUnit" }
-            ]
-          status: "queued"
-
       - name: "Checkout"
         uses: "actions/checkout@v2"
 
@@ -162,34 +152,11 @@ jobs:
           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
           sudo apt-get update
           apt-cache madison docker-ce
-          sudo apt-get install  docker-ce=${{ matrix.docker-version }} docker-ce-cli=${{ matrix.docker-version }} containerd.io
+          sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker-ce=${{ matrix.docker-version }}
+          
       - name: Check Docker Version
         run: docker --version
 
-      - name: "Report PHPUnit Starting"
-        uses: dflydev/check-runs-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          id: phpunit
-          status: in_progress
-
       - name: "Run PHPUnit"
         id: phpunit
-        continue-on-error: true
         run: composer test
-
-      - name: "Report PHPUnit Conclusion"
-        if: always()
-        uses: dflydev/check-runs-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          id: phpunit
-          conclusion: ${{ steps.phpunit.outcome }}
-          fail-on-error: true
-
-      - name: Clean up checks
-        if: always()
-        uses: dflydev/check-runs-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          conclusion: cancelled
