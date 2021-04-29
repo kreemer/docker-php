@@ -13,6 +13,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ContainerAttachWebsocket extends BaseEndpoint
 {
+    /**
+     * @return array[]
+     */
     public function getExtraHeaders(): array
     {
         return \array_merge(parent::getExtraHeaders(), [
@@ -25,6 +28,9 @@ class ContainerAttachWebsocket extends BaseEndpoint
         ]);
     }
 
+    /**
+     * @return mixed
+     */
     public function parseResponse(ResponseInterface $response, SerializerInterface $serializer, string $fetchMode = Client::FETCH_OBJECT)
     {
         if (Client::FETCH_OBJECT === $fetchMode) {

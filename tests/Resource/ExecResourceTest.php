@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
+use Docker\API\Model\ContainersCreatePostResponse201;
 use Docker\API\Model\ContainersIdExecPostBody;
 use Docker\API\Model\ExecIdJsonGetResponse200;
 use Docker\API\Model\ExecIdStartPostBody;
+use Docker\Docker;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
 
@@ -16,7 +18,7 @@ class ExecResourceTest extends TestCase
     /**
      * Return the container manager.
      */
-    private function getManager()
+    private function getManager(): Docker
     {
         return self::getDocker();
     }
@@ -36,6 +38,7 @@ class ExecResourceTest extends TestCase
         $execStartConfig->setDetach(false);
         $execStartConfig->setTty(false);
 
+        /** @var DockerRawStream $stream */
         $stream = $this->getManager()->execStart($execCreateResult->getId(), $execStartConfig);
 
         $this->assertInstanceOf(DockerRawStream::class, $stream);
@@ -76,7 +79,7 @@ class ExecResourceTest extends TestCase
         ]);
     }
 
-    private function createContainer()
+    private function createContainer(): ContainersCreatePostResponse201
     {
         $containerConfig = new ContainersCreatePostBody();
         $containerConfig->setImage('busybox:latest');

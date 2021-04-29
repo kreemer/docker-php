@@ -10,17 +10,16 @@ use Docker\Stream\TarStream;
 use Jane\OpenApiRuntime\Client\Client;
 use Jane\OpenApiRuntime\Client\Exception\InvalidFetchModeException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ImageBuild extends BaseEndpoint
 {
-    public function __construct($body, array $queryParameters = [], array $headerParameters = [])
-    {
-        parent::__construct($queryParameters, $headerParameters);
-
-        $this->body = $body;
-    }
-
+    /**
+     * @param ?StreamFactoryInterface $streamFactory
+     *
+     * @return array[]
+     */
     public function getBody(SerializerInterface $serializer, $streamFactory = null): array
     {
         $body = $this->body;
@@ -35,12 +34,16 @@ class ImageBuild extends BaseEndpoint
     protected function transformResponseBody(string $body, int $status, SerializerInterface $serializer, ?string $contentType = null)
     {
         if (200 === $status) {
+            // @phpstan-ignore-next-line
             return new BuildStream($body, $serializer);
         }
 
         return parent::transformResponseBody($body, $status, $serializer, $contentType);
     }
 
+    /**
+     * @return mixed
+     */
     public function parseResponse(ResponseInterface $response, SerializerInterface $serializer, string $fetchMode = Client::FETCH_OBJECT)
     {
         if (Client::FETCH_OBJECT === $fetchMode) {

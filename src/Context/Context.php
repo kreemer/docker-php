@@ -29,7 +29,7 @@ class Context implements ContextInterface
     private $directory;
 
     /**
-     * @var process Tar process
+     * @var resource Tar process
      */
     private $process;
 
@@ -113,7 +113,7 @@ class Context implements ContextInterface
      *
      * @return string Tar content
      */
-    public function toTar()
+    public function toTar(): string
     {
         $fileName = sys_get_temp_dir().DIRECTORY_SEPARATOR.'archive'.time().'.tar';
         $archive = new PharData($fileName, Phar::CURRENT_AS_FILEINFO | Phar::KEY_AS_FILENAME);

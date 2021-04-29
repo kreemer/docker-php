@@ -15,6 +15,7 @@ use Docker\Endpoint\ImageBuild;
 use Docker\Endpoint\ImageCreate;
 use Docker\Endpoint\ImagePush;
 use Docker\Endpoint\SystemEvents;
+use Http\Client\Common\Plugin;
 
 /**
  * Docker\Docker.
@@ -22,7 +23,9 @@ use Docker\Endpoint\SystemEvents;
 class Docker extends Client
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @param array<string, mixed> $queryParameters
      */
     public function containerAttach($id, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -31,6 +34,8 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
      */
     public function containerAttachWebsocket($id, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -39,6 +44,8 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
      */
     public function containerLogs($id, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -55,6 +62,9 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
+     * @param array<string, mixed> $headerParameters
      */
     public function imageBuild($inputStream, array $queryParameters = [], array $headerParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -63,6 +73,9 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
+     * @param array<string, mixed> $headerParameters
      */
     public function imageCreate(string $inputImage, array $queryParameters = [], array $headerParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -71,6 +84,9 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
+     * @param array<string, mixed> $headerParameters
      */
     public function imagePush($name, array $queryParameters = [], array $headerParameters = [], string $fetch = self::FETCH_OBJECT)
     {
@@ -83,13 +99,19 @@ class Docker extends Client
 
     /**
      * {@inheritdoc}
+     *
+     * @param array<string, mixed> $queryParameters
      */
     public function systemEvents(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
         return $this->executeEndpoint(new SystemEvents($queryParameters), $fetch);
     }
 
-    public static function create($httpClient = null, $additionalPlugins = [])
+    /**
+     * @param null          $httpClient
+     * @param array<Plugin> $additionalPlugins Parameter will be ignored
+     */
+    public static function create($httpClient = null, $additionalPlugins = []): Docker
     {
         if (null === $httpClient) {
             $httpClient = DockerClientFactory::createFromEnv();

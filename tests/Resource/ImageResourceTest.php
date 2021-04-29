@@ -7,6 +7,10 @@ namespace Docker\Tests\Resource;
 use Docker\API\Client;
 use Docker\API\Model\AuthConfig;
 use Docker\Context\ContextBuilder;
+use Docker\Docker;
+use Docker\Stream\BuildStream;
+use Docker\Stream\CreateImageStream;
+use Docker\Stream\PushStream;
 use Docker\Tests\TestCase;
 
 class ImageResourceTest extends TestCase
@@ -14,7 +18,7 @@ class ImageResourceTest extends TestCase
     /**
      * Return a container manager.
      */
-    private function getManager()
+    private function getManager(): Docker
     {
         return self::getDocker();
     }
@@ -26,6 +30,8 @@ class ImageResourceTest extends TestCase
         $contextBuilder->add('/test', 'test file content');
 
         $context = $contextBuilder->getContext();
+
+        /** @var BuildStream $buildStream */
         $buildStream = $this->getManager()->imageBuild($context->read(), ['t' => 'test-image']);
 
         $this->assertInstanceOf('Docker\Stream\BuildStream', $buildStream);
@@ -42,6 +48,7 @@ class ImageResourceTest extends TestCase
 
     public function testCreate(): void
     {
+        /** @var CreateImageStream $createImageStream */
         $createImageStream = $this->getManager()->imageCreate('', [
             'fromImage' => 'registry:latest',
         ]);
@@ -72,6 +79,7 @@ class ImageResourceTest extends TestCase
 
         $registryConfig = new AuthConfig();
         $registryConfig->setServeraddress('localhost:5000');
+        /** @var PushStream $pushImageStream */
         $pushImageStream = $this->getManager()->imagePush('localhost:5000/test-image', [], [
             'X-Registry-Auth' => $registryConfig,
         ]);

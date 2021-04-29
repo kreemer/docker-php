@@ -197,7 +197,7 @@ DOCKERFILE
     public function testWritesExposeCommands(): void
     {
         $contextBuilder = new ContextBuilder();
-        $contextBuilder->expose('80');
+        $contextBuilder->expose(80);
 
         $context = $contextBuilder->getContext();
 

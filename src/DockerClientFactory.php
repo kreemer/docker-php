@@ -16,7 +16,7 @@ use Http\Message\MessageFactory\GuzzleMessageFactory;
 final class DockerClientFactory
 {
     /**
-     * ( .
+     * @param array<mixed> $config
      */
     public static function create(array $config = [], PluginClientFactory $pluginClientFactory = null): HttpClient
     {

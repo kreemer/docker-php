@@ -87,9 +87,9 @@ class AttachWebsocketStream
      * @param int  $waitMicroTime Time to wait in microseconds before return false
      * @param bool $getFrame      Whether to return the frame of websocket or only the data
      *
-     * @return false|string|array|null Null for socket not available, false for no message, string for the last message and the frame array if $getFrame is set to true
+     * @return false|string|array[]|null Null for socket not available, false for no message, string for the last message and the frame array if $getFrame is set to true
      */
-    public function read($waitTime = 0, $waitMicroTime = 200000, $getFrame = false)
+    public function read(int $waitTime = 0, int $waitMicroTime = 200000, bool $getFrame = false)
     {
         if (!\is_resource($this->socket) || \feof($this->socket)) {
             return null;
@@ -150,12 +150,8 @@ class AttachWebsocketStream
 
     /**
      * Force to have something of the expected size (block).
-     *
-     * @param $length
-     *
-     * @return string
      */
-    private function socketRead($length)
+    private function socketRead(int $length): string
     {
         $read = '';
 
@@ -169,11 +165,9 @@ class AttachWebsocketStream
     /**
      * Write to the socket.
      *
-     * @param $data
-     *
-     * @return int
+     * @param mixed $data
      */
-    private function socketWrite($data)
+    private function socketWrite($data): int
     {
         return \fwrite($this->socket, $data);
     }

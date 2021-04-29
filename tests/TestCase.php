@@ -8,7 +8,7 @@ use Docker\Docker;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    private static $docker;
+    private static ?Docker $docker = null;
 
     public static function getDocker(): Docker
     {

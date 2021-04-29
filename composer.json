@@ -23,7 +23,8 @@
     "require-dev": {
         "jane-php/open-api-2": "~v6.1.1",
         "friendsofphp/php-cs-fixer": "^2.18",
-        "php-http/socket-client": "^2.1.0"
+        "php-http/socket-client": "^2.1.0",
+        "phpstan/phpstan": "^0.12.85"
     },
     "require": {
         "php": "^7.4",
@@ -33,7 +34,7 @@
         "psr/http-client-implementation": "^1.0"
     },
     "scripts": {
-        "test": "bin/phpunit",
+        "test": "vendor/bin/phpunit",
         "phpstan": "vendor/bin/phpstan analyse",
         "php-cs-fixer": "vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run --stop-on-violation --using-cache=no",
         "generate": "vendor/bin/jane-openapi generate"

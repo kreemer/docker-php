@@ -8,9 +8,12 @@ use Psr\Http\Message\StreamInterface;
 
 abstract class CallbackStream
 {
-    protected $stream;
+    protected StreamInterface $stream;
 
-    private $onNewFrameCallables = [];
+    /**
+     * @var callable[]
+     */
+    private array $onNewFrameCallables = [];
 
     public function __construct(StreamInterface $stream)
     {

@@ -13,6 +13,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ContainerAttach extends BaseEndpoint
 {
+    /**
+     * @return mixed
+     */
     public function parseResponse(ResponseInterface $response, SerializerInterface $serializer, string $fetchMode = Client::FETCH_OBJECT)
     {
         if (Client::FETCH_OBJECT === $fetchMode) {

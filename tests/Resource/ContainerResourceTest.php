@@ -6,7 +6,6 @@ namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
 use Docker\Docker;
-use Docker\Stream\AttachWebsocketStream;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
 
@@ -15,7 +14,7 @@ class ContainerResourceTest extends TestCase
     /**
      * Return the container manager.
      */
-    private function getManager()
+    private function getManager(): Docker
     {
         return self::getDocker();
     }
@@ -39,6 +38,7 @@ class ContainerResourceTest extends TestCase
         $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
 
         $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
+        /** @var DockerRawStream $dockerRawStream */
         $dockerRawStream = $this->getManager()->containerAttach($containerCreateResult->getId(), [
             'stream' => true,
             'stdout' => true,
@@ -61,8 +61,7 @@ class ContainerResourceTest extends TestCase
     {
         $this->markTestSkipped('Test does not work');
 
-        return;
-        $containerConfig = new ContainersCreatePostBody();
+        /*$containerConfig = new ContainersCreatePostBody();
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['sh']);
         $containerConfig->setAttachStdin(false);
@@ -74,7 +73,6 @@ class ContainerResourceTest extends TestCase
 
         $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
 
-        /** @var AttachWebsocketStream $webSocketStream */
         $webSocketStream = $this->getManager()->containerAttachWebsocket($containerCreateResult->getId(), [
             'stream' => true,
             'stdout' => true,
@@ -82,7 +80,6 @@ class ContainerResourceTest extends TestCase
             'stdin' => true,
         ]);
 
-        var_dump($containerCreateResult->getId());
         $this->getManager()->containerStart($containerCreateResult->getId());
 
         // Read the bash first line
@@ -105,6 +102,7 @@ class ContainerResourceTest extends TestCase
 
         // Exit the container
         $webSocketStream->write("exit\n");
+        */
     }
 
     public function testLogs(): void

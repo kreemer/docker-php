@@ -18,6 +18,9 @@ class ImagePush extends BaseEndpoint
         return \str_replace(['{name}'], [\urlencode($this->name)], '/images/{name}/push');
     }
 
+    /**
+     * @return mixed
+     */
     public function parseResponse(ResponseInterface $response, SerializerInterface $serializer, string $fetchMode = Client::FETCH_OBJECT)
     {
         if (Client::FETCH_OBJECT === $fetchMode) {
