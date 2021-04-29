@@ -21,7 +21,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return self::$docker;
     }
 
-
     protected function getLocalImageByName(string $imageName): ?ImageSummary
     {
         $images = self::getDocker()->imageList();
@@ -37,12 +36,12 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * @param string $imageName Image Name with tag (eg: busybox:latest)
      */
-    protected function pullImage(string $imageName)
+    protected function pullImage(string $imageName): void
     {
         /** @var CreateImageStream $response */
-        $response = self::getDocker()->imageCreate('', [ 'fromImage' => $imageName ]);
+        $response = self::getDocker()->imageCreate('', ['fromImage' => $imageName]);
         $response->wait();
 
-        self::assertNotNull($this->getLocalImageByName($imageName), 'Image \"' . $imageName . '\" should be pulled, but was not found locally');
+        self::assertNotNull($this->getLocalImageByName($imageName), 'Image \"'.$imageName.'\" should be pulled, but was not found locally');
     }
 }

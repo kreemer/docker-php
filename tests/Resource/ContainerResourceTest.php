@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
-use Docker\API\Model\CreateImageInfo;
-use Docker\API\Model\Image;
-use Docker\API\Model\ImageSummary;
 use Docker\Docker;
-use Docker\Stream\CreateImageStream;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
 
