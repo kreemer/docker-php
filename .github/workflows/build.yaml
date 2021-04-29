@@ -108,14 +108,14 @@ jobs:
       - lint
     name: "Test"
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
         php-version:
           - "7.4"
         docker-version:
-          - "20.01"
+          - "5:20.10.6~3-0~ubuntu-focal"
     steps:
       - name: Prepare Check Runs
         uses: dflydev/check-runs-action@v1
@@ -162,7 +162,7 @@ jobs:
           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
           sudo apt-get update
           apt-cache madison docker-ce
-          sudo apt-get install docker-ce
+          sudo apt-get install  docker-ce=${{ matrix.docker-version }} docker-ce-cli=${{ matrix.docker-version }} containerd.io
       - name: Check Docker Version
         run: docker --version
 
