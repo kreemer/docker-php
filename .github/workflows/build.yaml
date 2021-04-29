@@ -1,0 +1,195 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+env:
+  COMPOSER_FLAGS: "--ansi --no-interaction --no-progress --prefer-dist"
+
+jobs:
+  lint:
+    name: "Lint"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    steps:
+      - name: Prepare Check Runs
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checks: |
+            [
+              { "id": "phpstan", "name": "PHPStan" },
+              { "id": "php-cs-fixer", "name": "php-cs-fixer" }
+            ]
+          status: "queued"
+
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+        env:
+          COMPOSER_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+
+      - name: Get composer cache directory
+        id: composerCache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composerCache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: |
+          composer install ${{ env.COMPOSER_FLAGS }}
+
+      - name: "Report PHPStan Starting"
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: phpstan
+          status: in_progress
+
+      - name: "Run PHPStan"
+        id: phpstan
+        continue-on-error: true
+        run: composer phpstan
+
+      - name: "Report PHPStan Conclusion"
+        if: always()
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: phpstan
+          conclusion: ${{ steps.phpstan.outcome }}
+          fail-on-error: true
+
+      - name: "Report php-cs-fixer Starting"
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: php-cs-fixer
+          status: in_progress
+
+      - name: "Run php-cs-fixer"
+        id: php-cs-fixer
+        continue-on-error: true
+        run: composer php-cs-fixer
+
+      - name: "Report php-cs-fixer Conclusion"
+        if: always()
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: php-cs-fixer
+          conclusion: ${{ steps.php-cs-fixer.outcome }}
+          fail-on-error: true
+
+
+  test:
+    needs:
+      - lint
+    name: "Test"
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+        docker-version:
+          - "20.01"
+    steps:
+      - name: Prepare Check Runs
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checks: |
+            [
+              { "id": "phpunit", "name": "PHPUnit" },
+            ]
+          status: "queued"
+
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+        env:
+          COMPOSER_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+
+      - name: Get composer cache directory
+        id: composerCache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composerCache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: |
+          composer install ${{ env.COMPOSER_FLAGS }}
+
+      - name: Check Docker Version
+        run: docker --version
+
+      - name: Install Latest Docker
+        run: |
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+          sudo apt-get update
+          apt-cache madison docker-ce
+          sudo apt-get install docker-ce
+      - name: Check Docker Version
+        run: docker --version
+
+      - name: "Report PHPUnit Starting"
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: phpunit
+          status: in_progress
+
+      - name: "Run PHPUnit"
+        id: phpunit
+        continue-on-error: true
+        run: composer test
+
+      - name: "Report PHPUnit Conclusion"
+        if: always()
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: phpunit
+          conclusion: ${{ steps.phpunit.outcome }}
+          fail-on-error: true
+
+      - name: Clean up checks
+        if: always()
+        uses: dflydev/check-runs-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          conclusion: cancelled

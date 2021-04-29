@@ -1,0 +1,42 @@
+{
+    "name": "kreemer/docker-php",
+    "description": "A Docker client in PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kreemer",
+            "email": "kreemer@me.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Docker\\": "src/",
+            "Docker\\API\\": "generated/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Docker\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "jane-php/open-api-2": "~v6.1.1",
+        "friendsofphp/php-cs-fixer": "^2.18",
+        "php-http/socket-client": "^2.1.0"
+    },
+    "require": {
+        "php": "^7.4",
+        "jane-php/open-api-runtime": "~v6.1.1",
+        "phpunit/phpunit": "^9.5",
+        "guzzlehttp/psr7": "^1.8",
+        "psr/http-client-implementation": "^1.0"
+    },
+    "scripts": {
+        "test": "bin/phpunit",
+        "phpstan": "vendor/bin/phpstan analyse",
+        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run --stop-on-violation --using-cache=no",
+        "generate": "vendor/bin/jane-openapi generate"
+    },
+    "minimum-stability": "stable"
+}
