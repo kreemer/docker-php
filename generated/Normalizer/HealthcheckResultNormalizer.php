@@ -45,7 +45,7 @@ class HealthcheckResultNormalizer implements DenormalizerInterface, NormalizerIn
         }
         $object = new \Docker\API\Model\HealthcheckResult();
         if (\array_key_exists('Start', $data) && $data['Start'] !== null) {
-            $object->setStart(\DateTime::createFromFormat('Y-m-d\\TH:i:sP', $data['Start']));
+            $object->setStart(\DateTime::createFromFormat('Y-m-d\\TH:i:s.u+', $data['Start']));
         } elseif (\array_key_exists('Start', $data) && $data['Start'] === null) {
             $object->setStart(null);
         }
@@ -72,7 +72,7 @@ class HealthcheckResultNormalizer implements DenormalizerInterface, NormalizerIn
     {
         $data = [];
         if (null !== $object->getStart()) {
-            $data['Start'] = $object->getStart()->format('Y-m-d\\TH:i:sP');
+            $data['Start'] = $object->getStart()->format('Y-m-d\\TH:i:s.u+');
         }
         if (null !== $object->getEnd()) {
             $data['End'] = $object->getEnd();

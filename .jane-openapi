@@ -6,4 +6,5 @@ return [
     'openapi-file' => 'docker-swagger.yaml',
     'strict' => false,
     'use-fixer' => true,
+    'date-format' => 'Y-m-d\TH:i:s.u+',
 ];
