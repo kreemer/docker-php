@@ -155,13 +155,6 @@ jobs:
       - name: Check Docker Version
         run: docker --version
 
-      - name: Test Docker Version
-        run: |
-          docker ps -a
-          docker pull busybox:latest
-          docker run --rm busybox:latest echo "Testing Docker version ${{ matrix.docker-version }}"
-          docker ps -a
-
       - name: "Run PHPUnit"
         id: phpunit
         run: composer test
