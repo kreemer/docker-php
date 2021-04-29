@@ -81,6 +81,8 @@ class ExecResourceTest extends TestCase
 
     private function createContainer(): ContainersCreatePostResponse201
     {
+        $this->pullImage('busybox:latest');
+
         $containerConfig = new ContainersCreatePostBody();
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['sh']);

@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
+use Docker\API\Model\CreateImageInfo;
+use Docker\API\Model\Image;
+use Docker\API\Model\ImageSummary;
 use Docker\Docker;
+use Docker\Stream\CreateImageStream;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
 
@@ -19,18 +23,19 @@ class ContainerResourceTest extends TestCase
         return self::getDocker();
     }
 
-    /**
-     * Be sure to have image before doing test.
-     */
-    public static function setUpBeforeClass(): void
+    public function testDeleteImage(): void
     {
-        self::getDocker()->imageCreate('', [
-            'fromImage' => 'busybox:latest',
-        ]);
+        $this->pullImage('alpine:latest');
+        $image = $this->getLocalImageByName('alpine:latest');
+        self::assertNotNull($image, 'Could not find image \"alpine:latest\", this leads to other errors in tests');
+        self::getDocker()->imageDelete($image->getId());
+        self::assertNull($this->getLocalImageByName('alpine:latest'));
     }
 
     public function testAttach(): void
     {
+        $this->pullImage('busybox:latest');
+
         $containerConfig = new ContainersCreatePostBody();
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['echo', '-n', 'output']);
@@ -107,6 +112,8 @@ class ContainerResourceTest extends TestCase
 
     public function testLogs(): void
     {
+        $this->pullImage('busybox:latest');
+
         $containerConfig = new ContainersCreatePostBody();
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['echo', '-n', 'output']);
