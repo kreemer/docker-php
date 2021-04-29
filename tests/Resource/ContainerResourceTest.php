@@ -21,11 +21,11 @@ class ContainerResourceTest extends TestCase
 
     public function testDeleteImage(): void
     {
-        $this->pullImage('alpine:latest');
-        $image = $this->getLocalImageByName('alpine:latest');
-        self::assertNotNull($image, 'Could not find image \"alpine:latest\", this leads to other errors in tests');
+        $this->pullImage('bash:5.1.4');
+        $image = $this->getLocalImageByName('bash:5.1.4');
+        self::assertNotNull($image, 'Could not find image \"bash:5.1.4\", this leads to other errors in tests');
         self::getDocker()->imageDelete($image->getId());
-        self::assertNull($this->getLocalImageByName('alpine:latest'));
+        self::assertNull($this->getLocalImageByName('bash:5.1.4'));
     }
 
     public function testAttach(): void
