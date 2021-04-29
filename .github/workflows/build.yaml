@@ -143,8 +143,6 @@ jobs:
         run: |
           composer install ${{ env.COMPOSER_FLAGS }}
 
-      - name: Check Docker Version
-        run: docker --version
 
       - name: Install Latest Docker
         run: |
@@ -153,9 +151,16 @@ jobs:
           sudo apt-get update
           apt-cache madison docker-ce
           sudo apt-get -o Dpkg::Options::="--force-confnew" install -y --force-yes docker-ce=${{ matrix.docker-version }}
-          
+
       - name: Check Docker Version
         run: docker --version
+
+      - name: Test Docker Version
+        run: |
+          docker ps -a
+          docker pull busybox:latest
+          docker run --rm busybox:latest echo "Testing Docker version ${{ matrix.docker-version }}"
+          docker ps -a
 
       - name: "Run PHPUnit"
         id: phpunit
