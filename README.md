@@ -27,10 +27,12 @@ Docker API Version
 
 Currently only the latest version of the api is supported.
 
+
 Usage
 -----
 
-Docs needed
+See [the documentation](http://docker-php.readthedocs.org/en/latest/) from the original repository.
+
 
 Unit Tests
 ----------
