@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
+use Docker\API\Model\ContainersIdJsonGetResponse200;
+use Docker\API\Model\HostConfig;
+use Docker\API\Model\PortBinding;
 use Docker\Docker;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
@@ -26,6 +29,49 @@ class ContainerResourceTest extends TestCase
         self::assertNotNull($image, 'Could not find image \"bash:5.1.4\", this leads to other errors in tests');
         self::getDocker()->imageDelete($image->getId());
         self::assertNull($this->getLocalImageByName('bash:5.1.4'));
+    }
+
+    public function testInspectRunningImage(): void
+    {
+        $this->pullImage('busybox:latest');
+
+        $containerConfig = new ContainersCreatePostBody();
+        $containerConfig->setImage('busybox:latest');
+        $containerConfig->setCmd(['sh']);
+        $containerConfig->setAttachStdout(true);
+        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+        $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
+        $this->getManager()->containerStart($containerCreateResult->getId());
+
+        $inspect = $this->getManager()->containerInspect($containerCreateResult->getId());
+        if (!$inspect instanceof ContainersIdJsonGetResponse200) {
+            $this->fail('Could not inspect container with id ' . $containerCreateResult->getId());
+        }
+
+        $this->assertEquals($containerCreateResult->getId(), $inspect->getId());
+        $this->getManager()->containerStop($containerCreateResult->getId());
+    }
+
+
+    public function testInspectRunningImageWithExposedPorts(): void
+    {
+        $this->pullImage('nginx:latest');
+
+        $containerConfig = new ContainersCreatePostBody();
+        $containerConfig->setImage('nginx:latest');
+        $containerConfig->setAttachStdout(true);
+        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+
+        $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
+        $this->getManager()->containerStart($containerCreateResult->getId());
+
+        $inspect = $this->getManager()->containerInspect($containerCreateResult->getId());
+        if (!$inspect instanceof ContainersIdJsonGetResponse200) {
+            $this->fail('Could not inspect container with id ' . $containerCreateResult->getId());
+        }
+        $this->assertEquals($containerCreateResult->getId(), $inspect->getId());
+
+        $this->getManager()->containerStop($containerCreateResult->getId());
     }
 
     public function testAttach(): void
