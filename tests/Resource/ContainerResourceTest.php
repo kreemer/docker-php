@@ -6,8 +6,6 @@ namespace Docker\Tests\Resource;
 
 use Docker\API\Model\ContainersCreatePostBody;
 use Docker\API\Model\ContainersIdJsonGetResponse200;
-use Docker\API\Model\HostConfig;
-use Docker\API\Model\PortBinding;
 use Docker\Docker;
 use Docker\Stream\DockerRawStream;
 use Docker\Tests\TestCase;
@@ -45,13 +43,12 @@ class ContainerResourceTest extends TestCase
 
         $inspect = $this->getManager()->containerInspect($containerCreateResult->getId());
         if (!$inspect instanceof ContainersIdJsonGetResponse200) {
-            $this->fail('Could not inspect container with id ' . $containerCreateResult->getId());
+            $this->fail('Could not inspect container with id '.$containerCreateResult->getId());
         }
 
         $this->assertEquals($containerCreateResult->getId(), $inspect->getId());
         $this->getManager()->containerStop($containerCreateResult->getId());
     }
-
 
     public function testInspectRunningImageWithExposedPorts(): void
     {
@@ -67,7 +64,7 @@ class ContainerResourceTest extends TestCase
 
         $inspect = $this->getManager()->containerInspect($containerCreateResult->getId());
         if (!$inspect instanceof ContainersIdJsonGetResponse200) {
-            $this->fail('Could not inspect container with id ' . $containerCreateResult->getId());
+            $this->fail('Could not inspect container with id '.$containerCreateResult->getId());
         }
         $this->assertEquals($containerCreateResult->getId(), $inspect->getId());
 
